@@ -54,7 +54,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          path: file-icons
+          path: more-icons
       - uses: actions/checkout@v6
         with:
           repository: lumine-code/lumine

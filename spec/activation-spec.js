@@ -14,6 +14,11 @@ function ruleTexts() {
 describe("activation", () => {
   let service;
 
+  // The registry hands providers a normalized target; these specs exercise the
+  // service directly, so they build one.
+  const iconFor = (filePath, hints = {}) => service.iconFor({ path: filePath, hints });
+  const classesFor = (filePath, hints) => iconFor(filePath, hints);
+
   beforeEach(() => {
     // The colour classes and the Seti definitions both differ by interface
     // mode, and the spec runner's default is light. Pin it so the expectations
@@ -28,7 +33,7 @@ describe("activation", () => {
     waitsForPromise(() => atom.packages.activatePackage("more-icons"));
 
     runs(() => {
-      service = atom.packages.getActivePackage("more-icons").mainModule.provideIconsClass();
+      service = atom.packages.getActivePackage("more-icons").mainModule.provideIcons();
     });
   });
 
@@ -59,42 +64,65 @@ describe("activation", () => {
     const before = ruleTexts().length;
     expect(ruleTexts().some((rule) => rule.includes("mi-g-python-icon"))).toBe(false);
 
-    expect(service.iconClassForPath("/p/script.py")).toContain("mi-g-python-icon");
+    expect(classesFor("/p/script.py")).toContain("mi-g-python-icon");
 
     expect(ruleTexts().length).toBeGreaterThan(before);
     expect(ruleTexts().some((rule) => rule.includes("mi-g-python-icon"))).toBe(true);
   });
 
   it("writes each rule only once", () => {
-    service.iconClassForPath("/p/a.py");
+    classesFor("/p/a.py");
     const afterFirst = ruleTexts().length;
-    service.iconClassForPath("/p/b.py");
+    classesFor("/p/b.py");
     expect(ruleTexts().length).toBe(afterFirst);
   });
 
   it("ignores paths that are not strings", () => {
-    expect(service.iconClassForPath(null)).toBe(null);
-    expect(service.iconClassForPath(undefined)).toBe(null);
+    expect(iconFor(null)).toBe(null);
+    expect(iconFor(undefined)).toBe(null);
+  });
+
+  it("only answers for path targets", () => {
+    expect(service.handles).toEqual(["path"]);
+  });
+
+  // The file-icons set carries a directory table; Seti's manifest defines no
+  // folder glyphs at all, so it declines and the editor's own icon answers.
+  it("answers for directories on the file-icons set", () => {
+    expect(classesFor("/p/node_modules", { directory: true })).toContain("mi-icon");
+  });
+
+  it("declines directories on the seti set", () => {
+    atom.config.set("more-icons.set", "seti");
+    expect(iconFor("/p/node_modules", { directory: true })).toBe(null);
+  });
+
+  // Nothing here has a glyph saying "this folder is a repository", so these
+  // three are left to the editor rather than flattened into a plain folder.
+  it("declines the directories that carry their own meaning", () => {
+    expect(iconFor("/p/thing", { directory: true, repositoryRoot: true })).toBe(null);
+    expect(iconFor("/p/thing", { directory: true, submodule: true })).toBe(null);
+    expect(iconFor("/p/thing", { directory: true, symlink: true })).toBe(null);
   });
 
   it("drops the colour class when colouring is turned off", () => {
-    expect(service.iconClassForPath("/p/main.js")).toContain("mi-c-medium-yellow");
+    expect(classesFor("/p/main.js")).toContain("mi-c-medium-yellow");
 
     atom.config.set("more-icons.coloured", false);
-    const classes = service.iconClassForPath("/p/main.js");
+    const classes = classesFor("/p/main.js");
     expect(classes).toContain("mi-g-js-icon");
     expect(classes.some((name) => name.startsWith("mi-c-"))).toBe(false);
   });
 
   it("rebuilds the stylesheet when the set changes", () => {
-    expect(service.iconClassForPath("/p/main.js")).toContain("mi-g-js-icon");
+    expect(classesFor("/p/main.js")).toContain("mi-g-js-icon");
 
     atom.config.set("more-icons.set", "seti");
 
     expect(ruleTexts().some((rule) => rule.includes("mi-g-js-icon"))).toBe(false);
     // Seti ships one font, so the previous four @font-face rules are gone too.
     expect(ruleTexts().filter((rule) => rule.startsWith("@font-face")).length).toBe(1);
-    expect(service.iconClassForPath("/p/main.js")).toContain("mi-s-_javascript");
+    expect(classesFor("/p/main.js")).toContain("mi-s-_javascript");
   });
 
   it("notifies consumers when its answers change", () => {
@@ -120,7 +148,7 @@ describe("activation", () => {
 
     expect(atom.notifications.addError).toHaveBeenCalled();
     // Falls back to the set that needs no external files.
-    expect(service.iconClassForPath("/p/main.js")).toContain("mi-g-js-icon");
+    expect(classesFor("/p/main.js")).toContain("mi-g-js-icon");
   });
 
   it("removes its stylesheet on deactivation", () => {

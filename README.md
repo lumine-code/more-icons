@@ -29,7 +29,7 @@ To use a different Visual Studio Code icon theme, select the `seti` set and set 
 
 ## Services
 
-- **[icons.class](https://lumine-code.github.io/docs.html#services/icons.class)** (`1.0.0`): provided to icon consumers (tree view, tabs, search panel, fuzzy finders, archive view); exposes `iconClassForPath(filePath)` returning an array of CSS class names, and `onDidChange(callback)` which fires when the set or the interface theme changes.
+- **[icons.provider](https://lumine-code.github.io/docs.html#services/icons.provider)** (`1.0.0`): provided to the editor's icon registry; answers file paths with the glyph classes of the active set, declines everything else, and reports through `onDidChange` when the set or the interface theme changes.
 
 ## Attribution
 

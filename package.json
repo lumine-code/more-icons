@@ -32,9 +32,9 @@
     "jsonc-parser": "^3.3.1"
   },
   "providedServices": {
-    "icons.class": {
+    "icons.provider": {
       "versions": {
-        "1.0.0": "provideIconsClass"
+        "1.0.0": "provideIcons"
       }
     }
   },
