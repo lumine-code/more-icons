@@ -1,0 +1,55 @@
+This package bundles third-party icon data and fonts under `sets/`.
+The package's own source code is MIT licensed; see LICENSE.
+
+================================================================================
+sets/file-icons/
+================================================================================
+
+`icondb.js` and the source Less files under `tools/` are taken from the
+file-icons package for Atom:
+
+    https://github.com/file-icons/atom
+    Copyright (c) 2014-2016 Daniel Brooker
+    Copyright (c) 2016-2025 John Gardner
+    MIT License
+
+The fonts it references come from four separate projects:
+
+  file-icons.woff2   https://github.com/file-icons/icons
+                     ISC License
+
+  mfixx.woff2        https://github.com/file-icons/MFixx
+                     MIT License
+                     A fork of Font-Mfizz by Matt Ball.
+
+  devopicons.woff2   https://github.com/file-icons/DevOpicons
+                     Derived from Devicons by Theodore Vorillas
+                     (https://github.com/vorillaz/devicons), MIT License.
+                     NOTE: the DevOpicons fork itself carries no LICENSE file.
+
+  fontawesome.woff2  Font Awesome 4.7.0 by Dave Gandy
+                     https://fontawesome.com
+                     SIL OFL 1.1 (font), MIT License (CSS)
+
+Twenty entries in the icon table point at "Octicons Regular", the editor's own
+bundled UI font. No Octicons font file is redistributed here.
+
+================================================================================
+sets/seti/
+================================================================================
+
+`vs-seti-icon-theme.json` and `seti.woff` are taken from the theme-seti
+extension bundled with Visual Studio Code:
+
+    https://github.com/microsoft/vscode/tree/main/extensions/theme-seti
+    Copyright (c) Microsoft Corporation
+    MIT License
+
+The manifest is generated from the Seti UI theme by Jesse Weed:
+
+    https://github.com/jesseweed/seti-ui
+    Copyright (c) 2014 Jesse Weed
+    MIT License
+
+The `information_for_contributors` block inside the manifest is preserved
+verbatim; upstream fixes belong in jesseweed/seti-ui.

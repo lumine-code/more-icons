@@ -1,0 +1,78 @@
+{
+  "name": "file-icon-themes",
+  "author": "lumine-code",
+  "description": "Show file-type icons in the tree view, tabs, and search results.",
+  "repository": "https://github.com/lumine-code/file-icon-themes",
+  "bugs": {
+    "url": "https://github.com/lumine-code/file-icon-themes/issues"
+  },
+  "keywords": [
+    "seti",
+    "filetype",
+    "extensions",
+    "glyphs",
+    "tree-view",
+    "tabs"
+  ],
+  "version": "1.0.0",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.100.0 <2.0.0"
+  },
+  "main": "./lib/main.js",
+  "scripts": {
+    "build:glyphs": "node tools/build-glyphs.js",
+    "test": "cd ../lumine && npm run test:only -- ../file-icon-themes/spec",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.3.1"
+  },
+  "providedServices": {
+    "atom.file-icons": {
+      "versions": {
+        "1.0.0": "provideFileIcons"
+      }
+    }
+  },
+  "configSchema": {
+    "set": {
+      "title": "Icon set",
+      "description": "`file-icons` carries roughly 900 hand-curated glyphs with per-language colours. `seti` is the icon set Visual Studio Code ships by default.",
+      "type": "string",
+      "enum": [
+        {
+          "value": "file-icons",
+          "description": "file-icons - the widest coverage"
+        },
+        {
+          "value": "seti",
+          "description": "Seti - the Visual Studio Code default"
+        }
+      ],
+      "default": "file-icons"
+    },
+    "customThemePath": {
+      "title": "Custom theme folder",
+      "description": "*Only the `seti` set*. Absolute path to a folder holding a `*-icon-theme.json` in the Visual Studio Code file-icon-theme format, plus the fonts it references. Leave empty to use the bundled Seti theme. Themes whose icons are SVG rather than glyphs are not supported.",
+      "type": "string",
+      "default": ""
+    },
+    "coloured": {
+      "title": "Colour the icons",
+      "description": "Untick to render every icon in the theme's own text colour.",
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-n": "^18.2.2",
+    "globals": "^17.7.0",
+    "prettier": "^3.9.6"
+  }
+}
