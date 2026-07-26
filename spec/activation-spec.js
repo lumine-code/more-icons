@@ -28,7 +28,7 @@ describe("activation", () => {
     waitsForPromise(() => atom.packages.activatePackage("more-icons"));
 
     runs(() => {
-      service = atom.packages.getActivePackage("more-icons").mainModule.provideFileIcons();
+      service = atom.packages.getActivePackage("more-icons").mainModule.provideIconsClass();
     });
   });
 

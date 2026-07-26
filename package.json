@@ -34,7 +34,7 @@
   "providedServices": {
     "icons.class": {
       "versions": {
-        "1.0.0": "provideFileIcons"
+        "1.0.0": "provideIconsClass"
       }
     }
   },
