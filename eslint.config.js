@@ -9,9 +9,10 @@ const runtimeModules = ["atom", "@electron/remote"];
 
 module.exports = [
   {
-    // Vendored upstream data: `sets/file-icons/icondb.js` is a generated table
-    // and the Less sources under `tools/` are inputs to build-glyphs.js.
-    ignores: ["sets/**", "tools/*.less"],
+    // Vendored upstream data: `sets/file-icons/icondb.js` is a generated
+    // match table, and the fonts and manifests beside it are binary or
+    // third-party.
+    ignores: ["sets/**"],
   },
   js.configs.recommended,
   n.configs["flat/recommended-script"],

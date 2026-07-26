@@ -1,18 +1,41 @@
 "use strict";
 
-// Transcodes the upstream file-icons Less sources into plain data:
+// Regenerates sets/file-icons/glyphs.json and palette.json from a checkout of
+// the upstream file-icons package:
 //
-//   tools/icons.less   -> sets/file-icons/glyphs.json   (class -> glyph + font metrics)
-//   tools/colours.less -> sets/file-icons/palette.json  (colour class -> hex, per theme mode)
+//   npm run build:glyphs -- path/to/file-icons
 //
-// Run with `npm run build:glyphs` after refreshing the Less sources from
-// upstream. The output is committed, so this never runs at package load.
+// Reads only `styles/icons.less` from that checkout. The palette is not read
+// from `styles/colours.less` — its base16 hues and per-class mixins are
+// transcribed into the constants below, because the Less mixins branch on the
+// theme's own background lightness and cannot be evaluated standalone.
+//
+// Nothing here runs at package load, and no Less is kept in this repository:
+// the generated JSON is committed and is what the runtime reads.
 
 const fs = require("fs");
 const path = require("path");
 
-const TOOLS = __dirname;
-const OUT = path.join(TOOLS, "..", "sets", "file-icons");
+const OUT = path.join(__dirname, "..", "sets", "file-icons");
+
+const USAGE =
+  "Usage: npm run build:glyphs -- <path to a file-icons checkout>\n" +
+  "  e.g. npm run build:glyphs -- ../../file-icons-upstream";
+
+function upstreamStylesheet() {
+  const checkout = process.argv[2];
+  if (!checkout) throw new Error(USAGE);
+
+  // Accept either the repository root or its styles/ directory.
+  for (const candidate of [
+    path.join(checkout, "styles", "icons.less"),
+    path.join(checkout, "icons.less"),
+  ]) {
+    if (fs.existsSync(candidate)) return candidate;
+  }
+
+  throw new Error(`No styles/icons.less under ${checkout}\n${USAGE}`);
+}
 
 // -----------------------------------------------------------------------------
 // Less colour functions, reimplemented so the palette can be precomputed.
@@ -81,7 +104,8 @@ const saturate = (hex, pct) => adjust(hex, 1, pct / 100);
 // Palette
 // -----------------------------------------------------------------------------
 
-// Base16 hues, from the PALETTE block of colours.less.
+// Base16 hues, transcribed from the PALETTE block of upstream's
+// styles/colours.less.
 const HUES = {
   red: "#ac4142",
   green: "#90a959",
@@ -97,8 +121,9 @@ const HUES = {
 
 const ADJUST_TONE = 15;
 
-// The CSS CLASSES block of colours.less, transcribed. Each entry is the
-// conditional mixin applied to the tone, or `null` for a plain `color:`.
+// The CSS CLASSES block of upstream's styles/colours.less, transcribed. Each
+// entry is the conditional mixin applied to the tone, or `null` for a plain
+// `color:`.
 //   brighten -> only applies on dark themes: saturate(lighten(c, n), n)
 //   darken   -> only applies on light themes: darken(c, n)
 //   greyish  -> only applies on dark themes: lighten(c, n), and emits
@@ -204,7 +229,7 @@ function readContent(body) {
 }
 
 function buildGlyphs() {
-  const source = fs.readFileSync(path.join(TOOLS, "icons.less"), "utf8");
+  const source = fs.readFileSync(upstreamStylesheet(), "utf8");
   const glyphs = {};
   const counts = { octicons: 0, fa: 0, mf: 0, devicons: 0, fi: 0 };
   let skipped = 0;
@@ -285,4 +310,10 @@ function main() {
   console.log(`palette.json ${Object.keys(palette.dark).length} colours × 2 modes`);
 }
 
-main();
+try {
+  main();
+} catch (error) {
+  // A bad invocation should print the usage line, not a stack trace.
+  console.error(error.message);
+  process.exitCode = 2;
+}

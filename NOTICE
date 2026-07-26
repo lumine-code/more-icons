@@ -5,8 +5,10 @@ The package's own source code is MIT licensed; see LICENSE.
 sets/file-icons/
 ================================================================================
 
-`icondb.js` and the source Less files under `tools/` are taken from the
-file-icons package for Atom:
+`icondb.js` is taken verbatim from the file-icons package for Atom. `glyphs.json`
+and `palette.json` are generated from that project's `styles/icons.less` and
+`styles/colours.less` by `tools/build-glyphs.js`; the Less sources themselves are
+not redistributed here.
 
     https://github.com/file-icons/atom
     Copyright (c) 2014-2016 Daniel Brooker
