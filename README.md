@@ -9,9 +9,9 @@ Ships two icon sets and one runtime. Both are glyph fonts, so icons take their s
 - **file-icons set**: roughly 900 glyphs with per-language colours, from the long-running `file-icons` project.
 - **Seti set**: the icon set Visual Studio Code ships by default.
 - **Light and dark**: each set carries a second palette, swapped when the interface theme changes.
-- **Custom themes**: point the package at any folder holding a Visual Studio Code file-icon-theme manifest.
+- **Custom themes**: on the `seti` set, point the package at any folder holding a Visual Studio Code file-icon-theme manifest.
 - **Lazily generated CSS**: a rule is written the first time an icon is actually shown, not for all 900 up front.
-- **Grammar-aware**: files whose extension no set recognises are matched through the grammar the editor picked for them.
+- **Grammar-aware**: on the `seti` set, files whose name and extension the manifest does not list are matched through the grammar the editor picked for them.
 
 ## Installation
 
@@ -21,15 +21,15 @@ To install `more-icons` search for _more-icons_ in the Install pane of the Lumin
 
 Pick a set under Settings. `file-icons` has the wider coverage and colours icons by language family; `seti` matches Visual Studio Code.
 
-Only files get icons. Directories keep the tree view's own folder, repository, submodule, and symlink icons, because neither set defines folder glyphs.
+The `file-icons` set draws folders it recognises by name, such as `.github` and `node_modules`; `seti` has no folder glyphs and leaves every directory to the editor. Either set leaves a directory alone when it is a symlink, a submodule, or a repository root, because that says more about it than its name does.
 
 To use a different Visual Studio Code icon theme, select the `seti` set and set **Custom theme folder** to a directory containing a `*-icon-theme.json` file and the fonts it references. Themes whose icons are SVG rather than font glyphs are not supported.
 
-`native-icons` composes with this package: leave it in its default `support` mode and its greenlisted extensions will override the glyphs shown here.
+`native-icons` composes with this package: it claims nothing until you add patterns to its greenlist, and the files you list there then take the operating system's icon instead of the glyphs shown here.
 
 ## Services
 
-- **[icons.provider](https://lumine-code.github.io/docs.html#services/icons.provider)** (`1.0.0`): provided to the editor's icon registry; answers file paths with the glyph classes of the active set, declines everything else, and reports through `onDidChange` when the set or the interface theme changes.
+- **[icons.provider](https://lumine-code.github.io/docs.html#services/icons.provider)** (`1.0.0`): provided to the editor's icon registry; answers files, and the directories the active set recognises, with that set's glyph classes; declines everything else so another provider can answer, and reports through `onDidChange` when the set or the interface theme changes.
 
 ## Attribution
 
