@@ -1,12 +1,13 @@
 {
-  "name": "file-icons",
+  "name": "more-icons",
   "author": "lumine-code",
   "description": "Show file-type icons in the tree view, tabs, and search results.",
-  "repository": "https://github.com/lumine-code/file-icons",
+  "repository": "https://github.com/lumine-code/more-icons",
   "bugs": {
-    "url": "https://github.com/lumine-code/file-icons/issues"
+    "url": "https://github.com/lumine-code/more-icons/issues"
   },
   "keywords": [
+    "file-icons",
     "seti",
     "filetype",
     "extensions",
@@ -22,7 +23,7 @@
   "main": "./lib/main.js",
   "scripts": {
     "build:glyphs": "node tools/build-glyphs.js",
-    "test": "cd ../lumine && npm run test:only -- ../file-icons/spec",
+    "test": "cd ../lumine && npm run test:only -- ../more-icons/spec",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
@@ -31,7 +32,7 @@
     "jsonc-parser": "^3.3.1"
   },
   "providedServices": {
-    "file-icons.classes": {
+    "icons.class": {
       "versions": {
         "1.0.0": "provideFileIcons"
       }

@@ -89,4 +89,4 @@ jobs:
       - name: Run the Jasmine spec suite
         working-directory: lumine
         timeout-minutes: 20
-        run: xvfb-run --auto-servernum npm start -- --test ../file-icons/spec
+        run: xvfb-run --auto-servernum npm start -- --test ../more-icons/spec

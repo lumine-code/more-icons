@@ -3,7 +3,7 @@ const path = require("path");
 const PACKAGE_ROOT = path.join(__dirname, "..");
 
 function styleElement() {
-  return document.head.querySelector("style[data-file-icons]");
+  return document.head.querySelector("style[data-more-icons]");
 }
 
 function ruleTexts() {
@@ -25,15 +25,15 @@ describe("activation", () => {
     waitsForPromise(() => atom.packages.activatePackage("language-javascript"));
 
     atom.packages.loadPackage(PACKAGE_ROOT);
-    waitsForPromise(() => atom.packages.activatePackage("file-icons"));
+    waitsForPromise(() => atom.packages.activatePackage("more-icons"));
 
     runs(() => {
-      service = atom.packages.getActivePackage("file-icons").mainModule.provideFileIcons();
+      service = atom.packages.getActivePackage("more-icons").mainModule.provideFileIcons();
     });
   });
 
   afterEach(() => {
-    waitsForPromise(() => atom.packages.deactivatePackage("file-icons"));
+    waitsForPromise(() => atom.packages.deactivatePackage("more-icons"));
   });
 
   it("installs a single stylesheet holding the fonts and shared geometry", () => {
@@ -46,23 +46,23 @@ describe("activation", () => {
       expect(rule).toContain("data:font/woff2;charset=utf-8;base64,");
     }
 
-    expect(ruleTexts().some((rule) => rule.includes(".icon.fi-icon::before"))).toBe(true);
+    expect(ruleTexts().some((rule) => rule.includes(".icon.mi-icon::before"))).toBe(true);
   });
 
   it("exposes the colour palette as custom properties", () => {
     const root = ruleTexts().find((rule) => rule.startsWith(":root"));
-    expect(root).toContain("--fi-medium-yellow:");
-    expect(root).toContain("--fi-dark-blue:");
+    expect(root).toContain("--mi-medium-yellow:");
+    expect(root).toContain("--mi-dark-blue:");
   });
 
   it("writes a glyph rule the first time a path needs one", () => {
     const before = ruleTexts().length;
-    expect(ruleTexts().some((rule) => rule.includes("fi-g-python-icon"))).toBe(false);
+    expect(ruleTexts().some((rule) => rule.includes("mi-g-python-icon"))).toBe(false);
 
-    expect(service.iconClassForPath("/p/script.py")).toContain("fi-g-python-icon");
+    expect(service.iconClassForPath("/p/script.py")).toContain("mi-g-python-icon");
 
     expect(ruleTexts().length).toBeGreaterThan(before);
-    expect(ruleTexts().some((rule) => rule.includes("fi-g-python-icon"))).toBe(true);
+    expect(ruleTexts().some((rule) => rule.includes("mi-g-python-icon"))).toBe(true);
   });
 
   it("writes each rule only once", () => {
@@ -78,53 +78,53 @@ describe("activation", () => {
   });
 
   it("drops the colour class when colouring is turned off", () => {
-    expect(service.iconClassForPath("/p/main.js")).toContain("fi-c-medium-yellow");
+    expect(service.iconClassForPath("/p/main.js")).toContain("mi-c-medium-yellow");
 
-    atom.config.set("file-icons.coloured", false);
+    atom.config.set("more-icons.coloured", false);
     const classes = service.iconClassForPath("/p/main.js");
-    expect(classes).toContain("fi-g-js-icon");
-    expect(classes.some((name) => name.startsWith("fi-c-"))).toBe(false);
+    expect(classes).toContain("mi-g-js-icon");
+    expect(classes.some((name) => name.startsWith("mi-c-"))).toBe(false);
   });
 
   it("rebuilds the stylesheet when the set changes", () => {
-    expect(service.iconClassForPath("/p/main.js")).toContain("fi-g-js-icon");
+    expect(service.iconClassForPath("/p/main.js")).toContain("mi-g-js-icon");
 
-    atom.config.set("file-icons.set", "seti");
+    atom.config.set("more-icons.set", "seti");
 
-    expect(ruleTexts().some((rule) => rule.includes("fi-g-js-icon"))).toBe(false);
+    expect(ruleTexts().some((rule) => rule.includes("mi-g-js-icon"))).toBe(false);
     // Seti ships one font, so the previous four @font-face rules are gone too.
     expect(ruleTexts().filter((rule) => rule.startsWith("@font-face")).length).toBe(1);
-    expect(service.iconClassForPath("/p/main.js")).toContain("fi-s-_javascript");
+    expect(service.iconClassForPath("/p/main.js")).toContain("mi-s-_javascript");
   });
 
   it("notifies consumers when its answers change", () => {
     const callback = jasmine.createSpy("onDidChange");
     const subscription = service.onDidChange(callback);
 
-    atom.config.set("file-icons.coloured", false);
+    atom.config.set("more-icons.coloured", false);
     expect(callback.calls.count()).toBe(1);
 
-    atom.config.set("file-icons.set", "seti");
+    atom.config.set("more-icons.set", "seti");
     expect(callback.calls.count()).toBe(2);
 
     subscription.dispose();
-    atom.config.set("file-icons.coloured", true);
+    atom.config.set("more-icons.coloured", true);
     expect(callback.calls.count()).toBe(2);
   });
 
   it("warns and keeps working when a custom theme folder is unusable", () => {
     spyOn(atom.notifications, "addError");
 
-    atom.config.set("file-icons.set", "seti");
-    atom.config.set("file-icons.customThemePath", path.join(__dirname, "fixtures"));
+    atom.config.set("more-icons.set", "seti");
+    atom.config.set("more-icons.customThemePath", path.join(__dirname, "fixtures"));
 
     expect(atom.notifications.addError).toHaveBeenCalled();
     // Falls back to the set that needs no external files.
-    expect(service.iconClassForPath("/p/main.js")).toContain("fi-g-js-icon");
+    expect(service.iconClassForPath("/p/main.js")).toContain("mi-g-js-icon");
   });
 
   it("removes its stylesheet on deactivation", () => {
-    waitsForPromise(() => atom.packages.deactivatePackage("file-icons"));
+    waitsForPromise(() => atom.packages.deactivatePackage("more-icons"));
     runs(() => expect(styleElement()).toBe(null));
   });
 });
