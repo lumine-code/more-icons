@@ -1,4 +1,4 @@
-# file-icon-themes
+# file-icons
 
 Show file-type icons in the tree view, tabs, and search results.
 
@@ -15,7 +15,7 @@ Ships two icon sets and one runtime. Both are glyph fonts, so icons take their s
 
 ## Installation
 
-To install `file-icon-themes` search for _file-icon-themes_ in the Install pane of the Lumine settings or run `lumine --install lumine-code/file-icon-themes`.
+To install `file-icons` search for _file-icons_ in the Install pane of the Lumine settings or run `lumine --install lumine-code/file-icons`.
 
 ## Usage
 
@@ -29,7 +29,7 @@ To use a different Visual Studio Code icon theme, select the `seti` set and set 
 
 ## Services
 
-- **atom.file-icons** (`1.0.0`): provided to icon consumers (tree view, tabs, search panel, fuzzy finders, archive view); exposes `iconClassForPath(filePath)` returning an array of CSS class names, and `onDidChange(callback)` which fires when the set or the interface theme changes.
+- **file-icons.classes** (`1.0.0`): provided to icon consumers (tree view, tabs, search panel, fuzzy finders, archive view); exposes `iconClassForPath(filePath)` returning an array of CSS class names, and `onDidChange(callback)` which fires when the set or the interface theme changes.
 
 ## Attribution
 

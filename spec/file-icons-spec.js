@@ -6,7 +6,7 @@ const iconTable = require("../lib/icon-table");
 const fileIcons = require("../lib/set-file-icons");
 const seti = require("../lib/set-seti");
 
-describe("file-icon-themes", () => {
+describe("file-icons", () => {
   describe("the vendored data", () => {
     it("carries every glyph rule the upstream stylesheet defined", () => {
       // 929 = .fi 804 + .devicons 51 + .fa 33 + .mf 21 + .octicons 20. If a
@@ -49,47 +49,45 @@ describe("file-icon-themes", () => {
 
   describe("the file-icons set", () => {
     it("matches by extension", () => {
-      expect(fileIcons.resolve("/p/main.js")).toContain("fit-g-js-icon");
-      expect(fileIcons.resolve("/p/script.py")).toContain("fit-g-python-icon");
-      expect(fileIcons.resolve("/p/main.rs")).toContain("fit-g-rust-icon");
+      expect(fileIcons.resolve("/p/main.js")).toContain("fi-g-js-icon");
+      expect(fileIcons.resolve("/p/script.py")).toContain("fi-g-python-icon");
+      expect(fileIcons.resolve("/p/main.rs")).toContain("fi-g-rust-icon");
     });
 
     it("matches by exact filename ahead of extension", () => {
-      expect(fileIcons.resolve("/p/Gemfile")).toContain("fit-g-bundler-icon");
-      expect(fileIcons.resolve("/p/.gitignore")).toContain("fit-g-git-icon");
+      expect(fileIcons.resolve("/p/Gemfile")).toContain("fi-g-bundler-icon");
+      expect(fileIcons.resolve("/p/.gitignore")).toContain("fi-g-git-icon");
     });
 
     it("ignores template and backup suffixes", () => {
-      expect(fileIcons.resolve("/p/main.js.tpl")).toContain("fit-g-js-icon");
-      expect(fileIcons.resolve("/p/config.json~orig")).toContain("fit-g-json-icon");
+      expect(fileIcons.resolve("/p/main.js.tpl")).toContain("fi-g-js-icon");
+      expect(fileIcons.resolve("/p/config.json~orig")).toContain("fi-g-json-icon");
     });
 
     it("passes core octicon classes through untouched", () => {
       const classes = fileIcons.resolve("/p/notes.txt");
       expect(classes).toContain("icon-file-text");
-      expect(classes).not.toContain("fit-icon");
+      expect(classes).not.toContain("fi-icon");
     });
 
     it("picks the colour that matches the interface theme", () => {
       // 203 file rules name a different tone per mode; bower is one of them.
-      expect(fileIcons.resolve("/p/bower.json", { mode: "dark" })).toContain("fit-c-medium-yellow");
-      expect(fileIcons.resolve("/p/bower.json", { mode: "light" })).toContain(
-        "fit-c-medium-orange",
-      );
+      expect(fileIcons.resolve("/p/bower.json", { mode: "dark" })).toContain("fi-c-medium-yellow");
+      expect(fileIcons.resolve("/p/bower.json", { mode: "light" })).toContain("fi-c-medium-orange");
     });
 
     it("builds a declaration for every class it hands out", () => {
       for (const className of fileIcons.resolve("/p/main.js")) {
-        if (className === "fit-icon") continue;
+        if (className === "fi-icon") continue;
         expect(fileIcons.ruleFor(className)).toBeTruthy();
       }
-      expect(fileIcons.ruleFor("fit-g-js-icon")).toContain('content: "\\f129"');
-      expect(fileIcons.ruleFor("fit-c-medium-yellow")).toBe("color: var(--fit-medium-yellow);");
+      expect(fileIcons.ruleFor("fi-g-js-icon")).toContain('content: "\\f129"');
+      expect(fileIcons.ruleFor("fi-c-medium-yellow")).toBe("color: var(--fi-medium-yellow);");
     });
 
     it("returns null for a class it does not own", () => {
       expect(fileIcons.ruleFor("icon-file-text")).toBe(null);
-      expect(fileIcons.ruleFor("fit-g-not-a-real-icon")).toBe(null);
+      expect(fileIcons.ruleFor("fi-g-not-a-real-icon")).toBe(null);
     });
   });
 
@@ -108,22 +106,22 @@ describe("file-icon-themes", () => {
     it("matches the longest extension first", () => {
       // `apex` is one of the few extensions Seti maps directly rather than
       // routing through a language id.
-      expect(seti.resolve("/p/thing.apex")).toContain("fit-s-_salesforce");
+      expect(seti.resolve("/p/thing.apex")).toContain("fi-s-_salesforce");
     });
 
     it("routes mainstream languages through languageIds", () => {
       // Seti has no `js` or `py` entry under fileExtensions at all — these only
       // resolve because the grammar lookup supplies a language id.
-      expect(seti.resolve("/p/main.js")).toContain("fit-s-_javascript");
-      expect(seti.resolve("/p/script.py")).toContain("fit-s-_python");
+      expect(seti.resolve("/p/main.js")).toContain("fi-s-_javascript");
+      expect(seti.resolve("/p/script.py")).toContain("fi-s-_python");
     });
 
     it("falls back to the default icon", () => {
-      expect(seti.resolve("/p/unknown.zzzz")).toContain("fit-s-_default");
+      expect(seti.resolve("/p/unknown.zzzz")).toContain("fi-s-_default");
     });
 
     it("uses the light definitions on a light interface theme", () => {
-      expect(seti.resolve("/p/main.js", { mode: "light" })).toContain("fit-s-_javascript_light");
+      expect(seti.resolve("/p/main.js", { mode: "light" })).toContain("fi-s-_javascript_light");
     });
 
     it("leaves directories alone", () => {
@@ -131,7 +129,7 @@ describe("file-icon-themes", () => {
     });
 
     it("builds a font declaration from the manifest", () => {
-      const rule = seti.ruleFor("fit-s-_javascript");
+      const rule = seti.ruleFor("fi-s-_javascript");
       expect(rule).toContain("font-family: seti;");
       expect(rule).toContain("font-size: 150%;");
       expect(rule).toMatch(/content: "\\E[0-9A-F]+";/);
