@@ -303,11 +303,28 @@ function main() {
 
   const palette = buildPalette();
 
+  // The per-font defaults the glyph deltas are recorded against, shipped so the
+  // runtime can resolve every glyph to its upstream absolute size and top.
+  // `nudge` is a hand-calibrated vertical correction for the icon contract's
+  // content-area centring — measured, frozen, and preserved across rebuilds.
+  const fontsPath = path.join(OUT, "fonts.json");
+  const previous = fs.existsSync(fontsPath) ? JSON.parse(fs.readFileSync(fontsPath, "utf8")) : {};
+  const fonts = {};
+  for (const font of Object.values(FONTS)) {
+    fonts[font.family] = {
+      size: font.size,
+      top: font.top,
+      nudge: (previous[font.family] && previous[font.family].nudge) || 0,
+    };
+  }
+
   fs.writeFileSync(path.join(OUT, "glyphs.json"), JSON.stringify(glyphs, null, 0) + "\n");
   fs.writeFileSync(path.join(OUT, "palette.json"), JSON.stringify(palette, null, 2) + "\n");
+  fs.writeFileSync(fontsPath, JSON.stringify(fonts, null, 2) + "\n");
 
   console.log(`glyphs.json  ${Object.keys(glyphs).length} classes from ${total} rules`, counts);
   console.log(`palette.json ${Object.keys(palette.dark).length} colours × 2 modes`);
+  console.log(`fonts.json   ${Object.keys(fonts).length} font defaults`);
 }
 
 try {

@@ -1,6 +1,7 @@
 const path = require("path");
 
 const glyphs = require("../sets/file-icons/glyphs.json");
+const fonts = require("../sets/file-icons/fonts.json");
 const palette = require("../sets/file-icons/palette.json");
 const iconTable = require("../lib/icon-table");
 const fileIcons = require("../lib/set-file-icons");
@@ -45,6 +46,19 @@ describe("file-icons", () => {
         .filter((name) => !Object.hasOwn(glyphs, name) && !name.startsWith("icon-"));
       expect(unresolved).toEqual([]);
     });
+
+    it("carries a font default for every family a glyph names", () => {
+      const families = new Set(Object.values(glyphs).map((glyph) => glyph.font));
+      for (const family of families) {
+        const font = fonts[family];
+        expect(font).toBeDefined();
+        expect(font.size).toBeGreaterThanOrEqual(13);
+        expect(font.size).toBeLessThanOrEqual(16);
+        expect(font.top).toBeGreaterThanOrEqual(0);
+        expect(font.top).toBeLessThanOrEqual(3);
+        expect(typeof font.nudge).toBe("number");
+      }
+    });
   });
 
   describe("the file-icons set", () => {
@@ -88,6 +102,53 @@ describe("file-icons", () => {
     it("returns null for a class it does not own", () => {
       expect(fileIcons.ruleFor("icon-file-text")).toBe(null);
       expect(fileIcons.ruleFor("mi-g-not-a-real-icon")).toBe(null);
+    });
+
+    // Contract-mode emission: every glyph resolves to its upstream absolute
+    // size (per-font default from fonts.json unless the glyph recorded a
+    // deviation), emitted as a ratio of the contract box; only the deviation
+    // from the font's own `top` survives as a translate — the base is what the
+    // box's content-area centring replaces.
+    describe("under the icon contract", () => {
+      it("emits the font's default size as a box ratio", () => {
+        // js-icon is Mfizz (14px default) with no size of its own.
+        const rule = fileIcons.ruleFor("mi-g-js-icon", true);
+        expect(rule).toContain("font-size: calc(var(--component-icon-size, 16px) * 14 / 16);");
+        expect(rule).not.toContain("top:");
+      });
+
+      it("keeps a glyph's own size deviation", () => {
+        // bootstrap-icon deviates from Devicons' 16px default down to 15px.
+        const rule = fileIcons.ruleFor("mi-g-bootstrap-icon", true);
+        expect(rule).toContain("* 15 / 16");
+      });
+
+      it("carries only the deviation from the font's default top", () => {
+        // bootstrap-icon: top 2 on a Devicons default of 3 → one pixel up.
+        expect(fileIcons.ruleFor("mi-g-bootstrap-icon", true)).toContain("translate: 0px -1px;");
+        // js-icon: top 1 on a Mfizz default of 0 → one pixel down.
+        expect(fileIcons.ruleFor("mi-g-js-icon", true)).toContain("translate: 0px 1px;");
+        // agda-icon: top 2 on a file-icons default of 0.
+        expect(fileIcons.ruleFor("mi-g-agda-icon", true)).toContain("translate: 0px 2px;");
+      });
+
+      it("emits no translate for a glyph at its font's defaults", () => {
+        // database-icon (octicons) and angular-icon (Devicons) record nothing.
+        expect(fileIcons.ruleFor("mi-g-database-icon", true)).toContain("* 16 / 16");
+        expect(fileIcons.ruleFor("mi-g-database-icon", true)).not.toContain("translate:");
+        expect(fileIcons.ruleFor("mi-g-angular-icon", true)).not.toContain("translate:");
+      });
+
+      it("keeps horizontal offsets", () => {
+        // swift-icon carries left: -1 and no top.
+        expect(fileIcons.ruleFor("mi-g-swift-icon", true)).toContain("translate: -1px 0px;");
+      });
+
+      it("leaves colour classes alone", () => {
+        expect(fileIcons.ruleFor("mi-c-medium-yellow", true)).toBe(
+          "color: var(--mi-medium-yellow);",
+        );
+      });
     });
   });
 
@@ -134,6 +195,12 @@ describe("file-icons", () => {
       expect(rule).toContain("font-size: 150%;");
       expect(rule).toMatch(/content: "\\E[0-9A-F]+";/);
       expect(rule).toMatch(/color: #[0-9a-f]{6};/);
+    });
+
+    it("keeps the manifest's designed size under the icon contract", () => {
+      // Seti's 150% is row-relative by design (the VS Code manifest declares
+      // it); the contract centres the oversized ink instead of scaling it.
+      expect(seti.ruleFor("mi-s-_javascript", true)).toContain("font-size: 150%;");
     });
 
     it("rejects a folder with no manifest", () => {

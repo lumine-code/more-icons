@@ -54,6 +54,19 @@ describe("activation", () => {
     expect(ruleTexts().some((rule) => rule.includes(".icon.mi-icon::before"))).toBe(true);
   });
 
+  it("detects the editor's icon contract and emits against its box", () => {
+    // The editor declares --icon-contract: box in its base variables, so the
+    // shared rule restates the contract frame and glyph rules size themselves
+    // as ratios of the contract box instead of absolute pixels.
+    const shared = ruleTexts().find((rule) => rule.includes(".icon.mi-icon::before"));
+    expect(shared).toContain("vertical-align: text-bottom");
+
+    expect(classesFor("/p/script.py")).toContain("mi-g-python-icon");
+    const glyph = ruleTexts().find((rule) => rule.includes("mi-g-python-icon"));
+    expect(glyph).toContain("calc(var(--component-icon-size, 16px)");
+    expect(glyph).not.toContain("top:");
+  });
+
   it("exposes the colour palette as custom properties", () => {
     const root = ruleTexts().find((rule) => rule.startsWith(":root"));
     expect(root).toContain("--mi-medium-yellow:");
