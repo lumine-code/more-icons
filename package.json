@@ -23,7 +23,7 @@
   "main": "./lib/main.js",
   "scripts": {
     "build:glyphs": "node tools/build-glyphs.js",
-    "test": "cd ../../lumine && npm run test:only -- ../pkg_lumine/more-icons/spec",
+    "test": "lumine --test spec",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
