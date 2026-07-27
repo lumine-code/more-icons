@@ -123,25 +123,26 @@ describe("file-icons", () => {
         expect(rule).toContain("* 15 / 16");
       });
 
-      it("carries only the deviation from the font's default top", () => {
-        // bootstrap-icon: top 2 on a Devicons default of 3 → one pixel up.
-        expect(fileIcons.ruleFor("mi-g-bootstrap-icon", true)).toContain("translate: 0px -1px;");
-        // js-icon: top 1 on a Mfizz default of 0 → one pixel down.
+      it("adds the calibrated font nudge to the glyph's top deviation", () => {
+        // js-icon: top 1 on a Mfizz default of 0, Mfizz nudge 0 → 1px down.
         expect(fileIcons.ruleFor("mi-g-js-icon", true)).toContain("translate: 0px 1px;");
-        // agda-icon: top 2 on a file-icons default of 0.
-        expect(fileIcons.ruleFor("mi-g-agda-icon", true)).toContain("translate: 0px 2px;");
+        // agda-icon: top 2 on a file-icons default of 0, nudge -1 → 1px down.
+        expect(fileIcons.ruleFor("mi-g-agda-icon", true)).toContain("translate: 0px 1px;");
+        // bootstrap-icon: top 2 on a Devicons default of 3, nudge +1 → even.
+        expect(fileIcons.ruleFor("mi-g-bootstrap-icon", true)).not.toContain("translate:");
+        // angular-icon: Devicons defaults, so just the +1 calibration nudge.
+        expect(fileIcons.ruleFor("mi-g-angular-icon", true)).toContain("translate: 0px 1px;");
       });
 
-      it("emits no translate for a glyph at its font's defaults", () => {
-        // database-icon (octicons) and angular-icon (Devicons) record nothing.
+      it("emits no translate for a glyph its font already centres", () => {
+        // database-icon: octicons defaults, octicons nudge 0.
         expect(fileIcons.ruleFor("mi-g-database-icon", true)).toContain("* 16 / 16");
         expect(fileIcons.ruleFor("mi-g-database-icon", true)).not.toContain("translate:");
-        expect(fileIcons.ruleFor("mi-g-angular-icon", true)).not.toContain("translate:");
       });
 
       it("keeps horizontal offsets", () => {
-        // swift-icon carries left: -1 and no top.
-        expect(fileIcons.ruleFor("mi-g-swift-icon", true)).toContain("translate: -1px 0px;");
+        // swift-icon carries left: -1 and no top (Devicons nudge +1).
+        expect(fileIcons.ruleFor("mi-g-swift-icon", true)).toContain("translate: -1px 1px;");
       });
 
       it("leaves colour classes alone", () => {
@@ -200,7 +201,10 @@ describe("file-icons", () => {
     it("keeps the manifest's designed size under the icon contract", () => {
       // Seti's 150% is row-relative by design (the VS Code manifest declares
       // it); the contract centres the oversized ink instead of scaling it.
-      expect(seti.ruleFor("mi-s-_javascript", true)).toContain("font-size: 150%;");
+      const rule = seti.ruleFor("mi-s-_javascript", true);
+      expect(rule).toContain("font-size: 150%;");
+      // The calibrated set-wide nudge down to the octicon reference position.
+      expect(rule).toContain("translate: 0px 1px;");
     });
 
     it("rejects a folder with no manifest", () => {
