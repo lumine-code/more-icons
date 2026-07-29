@@ -106,9 +106,9 @@ describe("file-icons", () => {
 
     // Contract-mode emission: every glyph resolves to its upstream absolute
     // size (per-font default from fonts.json unless the glyph recorded a
-    // deviation), emitted as a ratio of the contract box; only the deviation
-    // from the font's own `top` survives as a translate — the base is what the
-    // box's content-area centring replaces.
+    // deviation), emitted as a ratio of the contract box. No upstream `top`
+    // survives — the contract's content-area centring replaces the whole
+    // family of them — leaving one measured nudge per font.
     describe("under the icon contract", () => {
       it("emits the font's default size as a box ratio", () => {
         // js-icon is Mfizz (14px default) with no size of its own.
@@ -123,15 +123,20 @@ describe("file-icons", () => {
         expect(rule).toContain("* 15 / 16");
       });
 
-      it("adds the calibrated font nudge to the glyph's top deviation", () => {
-        // js-icon: top 1 on a Mfizz default of 0, Mfizz nudge 0 → 1px down.
-        expect(fileIcons.ruleFor("mi-g-js-icon", true)).toContain("translate: 0px 1px;");
-        // agda-icon: top 2 on a file-icons default of 0, nudge -1 → 1px down.
-        expect(fileIcons.ruleFor("mi-g-agda-icon", true)).toContain("translate: 0px 1px;");
-        // bootstrap-icon: top 2 on a Devicons default of 3, nudge +1 → even.
-        expect(fileIcons.ruleFor("mi-g-bootstrap-icon", true)).not.toContain("translate:");
-        // angular-icon: Devicons defaults, so just the +1 calibration nudge.
-        expect(fileIcons.ruleFor("mi-g-angular-icon", true)).toContain("translate: 0px 1px;");
+      it("moves a glyph by its font's nudge alone, whatever top it recorded", () => {
+        // Upstream's tops positioned a glyph inside a baseline-aligned box.
+        // The contract centres the glyph's content area instead, so those
+        // values do not transfer: carrying them over left the common ones
+        // looking right and outliers — tex-icon records top 4 — sitting low.
+        // Every glyph of a font now shifts by that font's measured nudge.
+        for (const name of ["mi-g-js-icon", "mi-g-agda-icon", "mi-g-bootstrap-icon"]) {
+          expect(fileIcons.ruleFor(name, true)).toContain("translate: 0px 1px;");
+        }
+        // tex-icon records the largest deviation in the set; it moves like the
+        // rest of its font rather than 3px further down.
+        expect(fileIcons.ruleFor("mi-g-tex-icon", true)).toContain("translate: 0px 1px;");
+        // The octicon-font glyphs need no nudge, so they emit none at all.
+        expect(fileIcons.ruleFor("mi-g-database-icon", true)).not.toContain("translate:");
       });
 
       it("emits no translate for a glyph its font already centres", () => {
@@ -141,7 +146,8 @@ describe("file-icons", () => {
       });
 
       it("keeps horizontal offsets", () => {
-        // swift-icon carries left: -1 and no top (Devicons nudge +1).
+        // swift-icon carries left: -1; horizontal offsets stay, since they
+        // correct the ink inside an advance the contract centres unchanged.
         expect(fileIcons.ruleFor("mi-g-swift-icon", true)).toContain("translate: -1px 1px;");
       });
 
