@@ -21,6 +21,12 @@
     "lumine": "^1.0.0"
   },
   "main": "./lib/main.js",
+  "files": [
+    "NOTICE",
+    "lib",
+    "sets",
+    "spec"
+  ],
   "scripts": {
     "build:glyphs": "node tools/build-glyphs.js",
     "test": "lumine --test spec",
