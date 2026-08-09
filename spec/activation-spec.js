@@ -23,22 +23,22 @@ describe("activation", () => {
     // The colour classes and the Seti definitions both differ by interface
     // mode, and the spec runner's default is light. Pin it so the expectations
     // below name one palette rather than whichever the runner happened to use.
-    atom.config.set("theme.mode", "dark");
+    lumine.config.set("theme.mode", "dark");
 
     // Seti routes mainstream languages through `languageIds`, resolved from the
     // grammar the editor picks for the path.
-    waitsForPromise(() => atom.packages.activatePackage("language-javascript"));
+    waitsForPromise(() => lumine.packages.activatePackage("language-javascript"));
 
-    atom.packages.loadPackage(PACKAGE_ROOT);
-    waitsForPromise(() => atom.packages.activatePackage("more-icons"));
+    lumine.packages.loadPackage(PACKAGE_ROOT);
+    waitsForPromise(() => lumine.packages.activatePackage("more-icons"));
 
     runs(() => {
-      service = atom.packages.getActivePackage("more-icons").mainModule.provideIcons();
+      service = lumine.packages.getActivePackage("more-icons").mainModule.provideIcons();
     });
   });
 
   afterEach(() => {
-    waitsForPromise(() => atom.packages.deactivatePackage("more-icons"));
+    waitsForPromise(() => lumine.packages.deactivatePackage("more-icons"));
   });
 
   it("installs a single stylesheet holding the fonts and shared geometry", () => {
@@ -106,7 +106,7 @@ describe("activation", () => {
   });
 
   it("declines directories on the seti set", () => {
-    atom.config.set("more-icons.set", "seti");
+    lumine.config.set("more-icons.set", "seti");
     expect(iconFor("/p/node_modules", { directory: true })).toBe(null);
   });
 
@@ -121,7 +121,7 @@ describe("activation", () => {
   it("drops the colour class when colouring is turned off", () => {
     expect(classesFor("/p/main.js")).toContain("mi-c-medium-yellow");
 
-    atom.config.set("more-icons.coloured", false);
+    lumine.config.set("more-icons.coloured", false);
     const classes = classesFor("/p/main.js");
     expect(classes).toContain("mi-g-js-icon");
     expect(classes.some((name) => name.startsWith("mi-c-"))).toBe(false);
@@ -130,7 +130,7 @@ describe("activation", () => {
   it("rebuilds the stylesheet when the set changes", () => {
     expect(classesFor("/p/main.js")).toContain("mi-g-js-icon");
 
-    atom.config.set("more-icons.set", "seti");
+    lumine.config.set("more-icons.set", "seti");
 
     expect(ruleTexts().some((rule) => rule.includes("mi-g-js-icon"))).toBe(false);
     // Seti ships one font, so the previous four @font-face rules are gone too.
@@ -142,30 +142,30 @@ describe("activation", () => {
     const callback = jasmine.createSpy("onDidChange");
     const subscription = service.onDidChange(callback);
 
-    atom.config.set("more-icons.coloured", false);
+    lumine.config.set("more-icons.coloured", false);
     expect(callback.calls.count()).toBe(1);
 
-    atom.config.set("more-icons.set", "seti");
+    lumine.config.set("more-icons.set", "seti");
     expect(callback.calls.count()).toBe(2);
 
     subscription.dispose();
-    atom.config.set("more-icons.coloured", true);
+    lumine.config.set("more-icons.coloured", true);
     expect(callback.calls.count()).toBe(2);
   });
 
   it("warns and keeps working when a custom theme folder is unusable", () => {
-    spyOn(atom.notifications, "addError");
+    spyOn(lumine.notifications, "addError");
 
-    atom.config.set("more-icons.set", "seti");
-    atom.config.set("more-icons.customThemePath", path.join(__dirname, "fixtures"));
+    lumine.config.set("more-icons.set", "seti");
+    lumine.config.set("more-icons.customThemePath", path.join(__dirname, "fixtures"));
 
-    expect(atom.notifications.addError).toHaveBeenCalled();
+    expect(lumine.notifications.addError).toHaveBeenCalled();
     // Falls back to the set that needs no external files.
     expect(classesFor("/p/main.js")).toContain("mi-g-js-icon");
   });
 
   it("removes its stylesheet on deactivation", () => {
-    waitsForPromise(() => atom.packages.deactivatePackage("more-icons"));
+    waitsForPromise(() => lumine.packages.deactivatePackage("more-icons"));
     runs(() => expect(styleElement()).toBe(null));
   });
 });

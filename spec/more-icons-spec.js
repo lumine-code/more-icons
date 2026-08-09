@@ -165,8 +165,8 @@ describe("file-icons", () => {
       // Seti routes mainstream languages through `languageIds`, which is
       // resolved from the grammar the editor picks. The spec runner starts
       // with no language packages active, so activate the two used below.
-      waitsForPromise(() => atom.packages.activatePackage("language-javascript"));
-      waitsForPromise(() => atom.packages.activatePackage("language-python"));
+      waitsForPromise(() => lumine.packages.activatePackage("language-javascript"));
+      waitsForPromise(() => lumine.packages.activatePackage("language-python"));
     });
 
     afterEach(() => seti.unload());

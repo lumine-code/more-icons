@@ -5,7 +5,7 @@ The package's own source code is MIT licensed; see LICENSE.
 sets/file-icons/
 ================================================================================
 
-`icondb.js` is taken verbatim from the file-icons package for Atom. `glyphs.json`
+`icondb.js` is derived from the file-icons package for Atom and adapted for Lumine. `glyphs.json`
 and `palette.json` are generated from that project's `styles/icons.less` and
 `styles/colours.less` by `tools/build-glyphs.js`; the Less sources themselves are
 not redistributed here.
