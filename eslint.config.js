@@ -55,10 +55,12 @@ module.exports = [
         // Async helpers the editor's spec runner injects; see the matching
         // block in lumine/eslint.config.js.
         advanceClock: "readonly",
-        waitsForPromise: "readonly",
-        waitsFor: "readonly",
-        waits: "readonly",
-        runs: "readonly",
+        // Waiting primitives injected onto `window` by the editor's spec harness.
+        conditionPromise: "readonly",
+        emitterEventPromise: "readonly",
+        flushMicrotasks: "readonly",
+        timeoutPromise: "readonly",
+        waitForFrames: "readonly",
       },
     },
     rules: {

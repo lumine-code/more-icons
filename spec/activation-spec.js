@@ -19,7 +19,7 @@ describe("activation", () => {
   const iconFor = (filePath, hints = {}) => service.iconFor({ path: filePath, hints });
   const classesFor = (filePath, hints) => iconFor(filePath, hints);
 
-  beforeEach(() => {
+  beforeEach(async () => {
     // The colour classes and the Seti definitions both differ by interface
     // mode, and the spec runner's default is light. Pin it so the expectations
     // below name one palette rather than whichever the runner happened to use.
@@ -27,18 +27,16 @@ describe("activation", () => {
 
     // Seti routes mainstream languages through `languageIds`, resolved from the
     // grammar the editor picks for the path.
-    waitsForPromise(() => lumine.packages.activatePackage("language-javascript"));
+    await lumine.packages.activatePackage("language-javascript");
 
     lumine.packages.loadPackage(PACKAGE_ROOT);
-    waitsForPromise(() => lumine.packages.activatePackage("more-icons"));
+    await lumine.packages.activatePackage("more-icons");
 
-    runs(() => {
-      service = lumine.packages.getActivePackage("more-icons").mainModule.provideIcons();
-    });
+    service = lumine.packages.getActivePackage("more-icons").mainModule.provideIcons();
   });
 
-  afterEach(() => {
-    waitsForPromise(() => lumine.packages.deactivatePackage("more-icons"));
+  afterEach(async () => {
+    await lumine.packages.deactivatePackage("more-icons");
   });
 
   it("installs a single stylesheet holding the fonts and shared geometry", () => {
@@ -164,8 +162,8 @@ describe("activation", () => {
     expect(classesFor("/p/main.js")).toContain("mi-g-js-icon");
   });
 
-  it("removes its stylesheet on deactivation", () => {
-    waitsForPromise(() => lumine.packages.deactivatePackage("more-icons"));
-    runs(() => expect(styleElement()).toBe(null));
+  it("removes its stylesheet on deactivation", async () => {
+    await lumine.packages.deactivatePackage("more-icons");
+    expect(styleElement()).toBe(null);
   });
 });
