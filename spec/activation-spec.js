@@ -103,6 +103,15 @@ describe("activation", () => {
     expect(classesFor("/p/node_modules", { directory: true })).toContain("mi-icon");
   });
 
+  it("writes the Lumine logo rule for the user configuration directory", () => {
+    expect(classesFor("/p/.lumine", { directory: true })).toContain("mi-g-lumine-icon");
+
+    const glyph = ruleTexts().find((rule) => rule.includes("mi-g-lumine-icon"));
+    expect(glyph).toContain("data:image/svg+xml;base64,");
+    expect(glyph).toContain("mask:");
+    expect(glyph).not.toContain("Devicons");
+  });
+
   it("declines directories on the seti set", () => {
     lumine.config.set("more-icons.set", "seti");
     expect(iconFor("/p/node_modules", { directory: true })).toBe(null);

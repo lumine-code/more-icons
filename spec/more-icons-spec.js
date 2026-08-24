@@ -73,6 +73,16 @@ describe("file-icons", () => {
       expect(fileIcons.resolve("/p/.gitignore")).toContain("mi-g-git-icon");
     });
 
+    it("renders the Lumine mark for the user configuration directory", () => {
+      expect(fileIcons.resolve("/p/.lumine", { directory: true })).toContain("mi-g-lumine-icon");
+
+      const rule = fileIcons.ruleFor("mi-g-lumine-icon", true);
+      expect(rule).toContain("data:image/svg+xml;base64,");
+      expect(rule).toContain("mask:");
+      expect(rule).not.toContain("font-family: Devicons");
+      expect(rule).not.toContain('content: "\\e664"');
+    });
+
     it("ignores template and backup suffixes", () => {
       expect(fileIcons.resolve("/p/main.js.tpl")).toContain("mi-g-js-icon");
       expect(fileIcons.resolve("/p/config.json~orig")).toContain("mi-g-json-icon");
