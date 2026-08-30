@@ -2,8 +2,8 @@ const path = require("path");
 
 const PACKAGE_ROOT = path.join(__dirname, "..");
 
-function styleElement() {
-  return document.head.querySelector("style[data-more-icons]");
+function styleElement(document = globalThis.document) {
+  return document.head.querySelector('style[context="more-icons"]');
 }
 
 function ruleTexts() {
@@ -86,6 +86,23 @@ describe("activation", () => {
     const afterFirst = ruleTexts().length;
     classesFor("/p/b.py");
     expect(ruleTexts().length).toBe(afterFirst);
+  });
+
+  it("publishes generated rules into secondary documents", () => {
+    const frame = document.createElement("iframe");
+    jasmine.attachToDOM(frame);
+    const mount = lumine.styles.mount(frame.contentDocument);
+
+    try {
+      expect(classesFor("/p/script.py")).toContain("mi-g-python-icon");
+      const secondary = styleElement(frame.contentDocument);
+      expect(secondary).not.toBeNull();
+      expect(secondary.textContent).toContain("mi-g-python-icon");
+      expect(secondary.textContent).toContain("@font-face");
+    } finally {
+      mount.dispose();
+      frame.remove();
+    }
   });
 
   it("ignores paths that are not strings", () => {
