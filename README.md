@@ -29,7 +29,7 @@ To use a different Visual Studio Code icon theme, select the `seti` set and set 
 
 ## Services
 
-- `icons.provider`: provided to the editor's icon registry; answers files, and the directories the active set recognises, with that set's glyph classes; declines everything else so another provider can answer, and reports through `onDidChange` when the set or the interface theme changes.
+- `icons.provider`: provided to the editor's icon registry; answers files, and the directories the active set recognises, with `Icon.classes` descriptors for that set's glyph classes; declines everything else so another provider can answer, and reports through `onDidChange` when the set or the interface theme changes.
 
 ## Attribution
 

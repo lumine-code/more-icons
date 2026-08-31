@@ -17,7 +17,7 @@ describe("activation", () => {
   // The registry hands providers a normalized target; these specs exercise the
   // service directly, so they build one.
   const iconFor = (filePath, hints = {}) => service.iconFor({ path: filePath, hints });
-  const classesFor = (filePath, hints) => iconFor(filePath, hints);
+  const classesFor = (filePath, hints) => iconFor(filePath, hints).classes;
 
   beforeEach(async () => {
     // The colour classes and the Seti definitions both differ by interface
@@ -95,6 +95,13 @@ describe("activation", () => {
 
   it("only answers for path targets", () => {
     expect(service.handles).toEqual(["path"]);
+  });
+
+  it("answers with immutable class descriptors", () => {
+    const descriptor = iconFor("/p/script.py");
+    expect(descriptor.render).toBe("classes");
+    expect(descriptor.classes).toContain("mi-g-python-icon");
+    expect(Object.isFrozen(descriptor)).toBe(true);
   });
 
   // The file-icons set carries a directory table; Seti's manifest defines no
