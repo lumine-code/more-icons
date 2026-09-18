@@ -32,9 +32,22 @@ describe("file-icons", () => {
     });
 
     it("decodes the match table into its six indexes", () => {
-      expect(iconTable.files.byName.length).toBeGreaterThan(2000);
-      expect(iconTable.files.byPath.length).toBeGreaterThan(0);
-      expect(iconTable.directories.byName.length).toBeGreaterThan(0);
+      expect([
+        iconTable.directories.byName.length,
+        iconTable.directories.byInterpreter.length,
+        iconTable.directories.byLanguage.length,
+        iconTable.directories.byPath.length,
+        iconTable.directories.byScope.length,
+        iconTable.directories.bySignature.length,
+      ]).toEqual([54, 0, 0, 1, 0, 0]);
+      expect([
+        iconTable.files.byName.length,
+        iconTable.files.byInterpreter.length,
+        iconTable.files.byLanguage.length,
+        iconTable.files.byPath.length,
+        iconTable.files.byScope.length,
+        iconTable.files.bySignature.length,
+      ]).toEqual([2082, 232, 552, 45, 599, 146]);
       for (const icon of iconTable.files.byName) {
         expect(icon.match instanceof RegExp).toBe(true);
       }
@@ -42,6 +55,7 @@ describe("file-icons", () => {
 
     it("resolves every icon class to a glyph or a core octicon class", () => {
       const unresolved = iconTable.files.byName
+        .concat(iconTable.directories.byName)
         .map((icon) => icon.icon)
         .filter((name) => !Object.hasOwn(glyphs, name) && !name.startsWith("icon-"));
       expect(unresolved).toEqual([]);
@@ -71,6 +85,63 @@ describe("file-icons", () => {
     it("matches by exact filename ahead of extension", () => {
       expect(fileIcons.resolve("/p/Gemfile")).toContain("mi-g-bundler-icon");
       expect(fileIcons.resolve("/p/.gitignore")).toContain("mi-g-git-icon");
+    });
+
+    it("recognises the refreshed upstream filenames", () => {
+      const cases = [
+        ["/p/go.work", "mi-g-config-go-icon"],
+        ["/p/.ninja_deps", "mi-g-shuriken-icon"],
+        ["/p/.ninja_log", "mi-g-shuriken-icon"],
+        ["/p/CACHEDIR.TAG", "mi-g-tag-icon"],
+        ["/p/lib.pc", "mi-g-package-icon"],
+        ["/p/key.pgp", "mi-g-key-icon"],
+        ["/p/links.uri", "mi-g-toc-icon"],
+        ["/p/case.ztst", "mi-g-test-generic-icon"],
+        ["/p/theme.colorscheme", "mi-g-config-icon"],
+        ["/p/spec.doap", "mi-g-code-icon"],
+        ["/p/_clang-format", "mi-g-llvm-icon"],
+        ["/p/foo.Rapp.history", "mi-g-r-icon"],
+        ["/p/expr-dist", "mi-g-r-icon"],
+        ["/p/FEATURES", "mi-g-book-icon"],
+        ["/p/MACHINES", "mi-g-book-icon"],
+        ["/p/refs.refer", "mi-g-book-icon"],
+      ];
+
+      for (const [filePath, icon] of cases) {
+        expect(fileIcons.resolve(filePath)).toContain(icon);
+      }
+    });
+
+    it("recognises the refreshed upstream path rules", () => {
+      expect(fileIcons.resolve("/usr/share/games/fortunes/cookie")).toContain("mi-g-database-icon");
+      expect(fileIcons.resolve("/home/u/.config/GIMP/filters/GimpFoo.settings")).toContain(
+        "mi-g-gimp-icon",
+      );
+      expect(fileIcons.resolve("/usr/share/groff/current/tmac/papers/Index")).toContain(
+        "mi-g-book-icon",
+      );
+    });
+
+    it("recognises the Lefthook support directory", () => {
+      expect(fileIcons.resolve("/p/.lefthook-local", { directory: true })).toContain(
+        "mi-g-lefthook-icon",
+      );
+    });
+
+    it("keeps the imported table adapted to Lumine", () => {
+      const cases = [
+        ["/p/.lumineproject.json", "mi-g-lumine-icon"],
+        ["/p/.lpmrc", "mi-g-lumine-icon"],
+        ["/p/.lumineignore", "mi-g-lumine-icon"],
+        ["/p/.lumine-socket-main.1", "mi-g-tag-icon"],
+        ["/p/LUMINE_COMMIT_EDITMSG", "mi-g-git-commit-icon"],
+      ];
+
+      for (const [filePath, icon] of cases) {
+        expect(fileIcons.resolve(filePath)).toContain(icon);
+      }
+      expect(fileIcons.resolve("/p/.lumine", { directory: true })).toContain("mi-g-lumine-icon");
+      expect(fileIcons.resolve("/p/.atomproject.json")).not.toContain("mi-g-lumine-icon");
     });
 
     it("renders the Lumine mark for the user configuration directory", () => {
