@@ -11,6 +11,38 @@ function ruleTexts() {
   return Array.from(element.sheet.cssRules).map((rule) => rule.cssText);
 }
 
+describe("activation bootstrap", () => {
+  let queuedInitialization;
+  let service;
+
+  beforeEach(async () => {
+    spyOn(globalThis, "queueMicrotask").and.callFake((callback) => {
+      queuedInitialization = callback;
+    });
+
+    lumine.packages.loadPackage(PACKAGE_ROOT);
+    await lumine.packages.activatePackage("more-icons");
+    service = lumine.packages.getActivePackage("more-icons").mainModule.provideIcons();
+  });
+
+  afterEach(async () => {
+    await lumine.packages.deactivatePackage("more-icons");
+  });
+
+  it("publishes a cheap async facade before warming the icon set", () => {
+    expect(service.async).toBe(true);
+    expect(styleElement()).toBe(null);
+    expect(service.iconFor({ path: "/p/script.py", hints: {} })).toBe(null);
+
+    queuedInitialization();
+
+    expect(styleElement()).not.toBe(null);
+    expect(service.iconFor({ path: "/p/script.py", hints: {} }).classes).toContain(
+      "mi-g-python-icon",
+    );
+  });
+});
+
 describe("activation", () => {
   let service;
 
