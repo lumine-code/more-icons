@@ -194,7 +194,7 @@ describe("file-icons", () => {
       it("emits the font's default size as a box ratio", () => {
         // js-icon is Mfizz (14px default) with no size of its own.
         const rule = fileIcons.ruleFor("mi-g-js-icon", true);
-        expect(rule).toContain("font-size: calc(var(--component-icon-size, 16px) * 14 / 16);");
+        expect(rule).toContain("font-size: calc(var(--ui-icon-size, 16px) * 14 / 16);");
         expect(rule).not.toContain("top:");
       });
 

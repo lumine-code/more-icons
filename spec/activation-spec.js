@@ -93,7 +93,7 @@ describe("activation", () => {
 
     expect(classesFor("/p/script.py")).toContain("mi-g-python-icon");
     const glyph = ruleTexts().find((rule) => rule.includes("mi-g-python-icon"));
-    expect(glyph).toContain("calc(var(--component-icon-size, 16px)");
+    expect(glyph).toContain("calc(var(--ui-icon-size, 16px)");
     expect(glyph).not.toContain("top:");
   });
 
