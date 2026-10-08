@@ -23,7 +23,6 @@
   "main": "./lib/main.js",
   "files": [
     "assets",
-    "NOTICE",
     "lib",
     "sets",
     "spec"

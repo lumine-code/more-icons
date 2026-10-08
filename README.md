@@ -33,7 +33,7 @@ To use a different Visual Studio Code icon theme, select the `seti` set and set 
 
 ## Attribution
 
-The icon fonts and mapping tables under `sets/` come from the `file-icons` project, Seti UI, and Visual Studio Code. See `NOTICE` for the full list and their licences.
+The icon fonts and mapping tables under `sets/` come from the `file-icons` project, Seti UI, and Visual Studio Code. See `LICENSE` for the full list and their licences.
 
 ## Contributing
 
