@@ -268,6 +268,8 @@ The fonts it references come from four separate projects:
   file-icons.woff2   https://github.com/file-icons/icons
                      ISC License
 
+The file-icons font retains its 924 original glyphs and metrics and adds only the ten SVG glyphs already named by the bundled map: arttext4-icon (U+1D5EE), bikeshed-icon (U+1F6B2), dotenv-icon (U+EBB8), figma-icon (U+EBBA), imgbot-icon (U+EBBF), mint-icon (U+1F33F), mixin-icon (U+EBB9), photorec-icon (U+EBC0), shellcheck-icon (U+1F41A), and windi-icon (U+1F4A8). Their source SVGs, icons.tsv codepoints, and original dist/file-icons.woff2 are pinned to file-icons/icons revision e6e6e6ac8cb1d91867167c228c00a667f4d47101: https://github.com/file-icons/icons/tree/e6e6e6ac8cb1d91867167c228c00a667f4d47101. The original font and all added SVGs use that repository's ISC terms, reproduced in the upstream:file-icons_icons section above; the augmentation is a Lumine modification under those permitted terms.
+
   mfixx.woff2        https://github.com/file-icons/MFixx
                      MIT License
                      A fork of Font-Mfizz by Matt Ball.
