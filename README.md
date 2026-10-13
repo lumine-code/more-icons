@@ -13,6 +13,8 @@ Ships two icon sets and one runtime. Both are glyph fonts, so icons take their s
 - **Lazily generated CSS**: a rule is written the first time an icon is actually shown, not for all 900 up front.
 - **Grammar-aware**: on the `seti` set, files whose name and extension the manifest does not list are matched through the grammar the editor picked for them.
 
+![Identify source files and folders by their icons in the project tree.](.github/demo.png)
+
 ## Installation
 
 To install `more-icons` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/more-icons`.

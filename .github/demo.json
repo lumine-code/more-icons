@@ -1,0 +1,16 @@
+{
+  "title": "more-icons",
+  "description": "Identify source files and folders by their icons in the project tree.",
+  "recordedOn": "2026-10-13",
+  "sourceRevision": "83ca43c0c5bea519a10e4bba9b7f82825d24fe77",
+  "mode": "normal",
+  "fontSettings": "default",
+  "images": [
+    {
+      "file": "demo.png",
+      "label": "Identify source files and folders by their icons in the project tree.",
+      "width": 1200,
+      "height": 760
+    }
+  ]
+}
