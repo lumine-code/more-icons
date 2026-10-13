@@ -12,37 +12,36 @@ function ruleTexts() {
 }
 
 describe("activation bootstrap", () => {
-  let queuedInitialization;
-  let service;
-
+  let service, finishImport;
   beforeEach(async () => {
-    spyOn(globalThis, "queueMicrotask").and.callFake((callback) => {
-      queuedInitialization = callback;
-    });
-
-    lumine.packages.loadPackage(PACKAGE_ROOT);
+    jasmine.useRealClock();
+    const pack = lumine.packages.loadPackage(PACKAGE_ROOT);
+    pack.requireMainModule();
+    const loader = require("../lib/set-loader");
+    const actual = await loader.load("file-icons");
+    spyOn(loader, "load").and.returnValue(
+      new Promise((resolve) => {
+        finishImport = () => resolve(actual);
+      }),
+    );
     await lumine.packages.activatePackage("more-icons");
-    service = lumine.packages.getActivePackage("more-icons").mainModule.provideIcons();
+    service = pack.mainModule.provideIcons();
   });
-
   afterEach(async () => {
     await lumine.packages.deactivatePackage("more-icons");
   });
-
-  it("publishes a cheap async facade before warming the icon set", () => {
+  it("publishes a cheap async facade before warming the icon set", async () => {
     expect(service.async).toBe(true);
     expect(styleElement()).toBe(null);
     expect(service.iconFor({ path: "/p/script.py", hints: {} })).toBe(null);
-
-    queuedInitialization();
-
+    finishImport();
+    await conditionPromise(() => service.iconFor({ path: "/p/script.py", hints: {} }) !== null);
     expect(styleElement()).not.toBe(null);
     expect(service.iconFor({ path: "/p/script.py", hints: {} }).classes).toContain(
       "mi-g-python-icon",
     );
   });
 });
-
 describe("activation", () => {
   let service;
 
@@ -52,6 +51,7 @@ describe("activation", () => {
   const classesFor = (filePath, hints) => iconFor(filePath, hints).classes;
 
   beforeEach(async () => {
+    jasmine.useRealClock();
     // The colour classes and the Seti definitions both differ by interface
     // mode, and the spec runner's default is light. Pin it so the expectations
     // below name one palette rather than whichever the runner happened to use.
@@ -65,6 +65,7 @@ describe("activation", () => {
     await lumine.packages.activatePackage("more-icons");
 
     service = lumine.packages.getActivePackage("more-icons").mainModule.provideIcons();
+    await conditionPromise(() => service.iconFor({ path: "/p/main.js", hints: {} }) !== null);
   });
 
   afterEach(async () => {
@@ -151,8 +152,13 @@ describe("activation", () => {
     expect(glyph).not.toContain("Devicons");
   });
 
-  it("declines directories on the seti set", () => {
+  it("declines directories on the seti set", async () => {
     lumine.config.set("more-icons.set", "seti");
+    await conditionPromise(() =>
+      service
+        .iconFor({ path: "/p/main.js", hints: {} })
+        ?.classes.some((name) => name.startsWith("mi-s-")),
+    );
     expect(iconFor("/p/node_modules", { directory: true })).toBe(null);
   });
 
@@ -173,10 +179,15 @@ describe("activation", () => {
     expect(classes.some((name) => name.startsWith("mi-c-"))).toBe(false);
   });
 
-  it("rebuilds the stylesheet when the set changes", () => {
+  it("rebuilds the stylesheet when the set changes", async () => {
     expect(classesFor("/p/main.js")).toContain("mi-g-js-icon");
 
     lumine.config.set("more-icons.set", "seti");
+    await conditionPromise(() =>
+      service
+        .iconFor({ path: "/p/main.js", hints: {} })
+        ?.classes.some((name) => name.startsWith("mi-s-")),
+    );
 
     expect(ruleTexts().some((rule) => rule.includes("mi-g-js-icon"))).toBe(false);
     // Seti ships one font, so the previous four @font-face rules are gone too.
@@ -184,7 +195,7 @@ describe("activation", () => {
     expect(classesFor("/p/main.js")).toContain("mi-s-_javascript");
   });
 
-  it("notifies consumers when its answers change", () => {
+  it("notifies consumers when its answers change", async () => {
     const callback = jasmine.createSpy("onDidChange");
     const subscription = service.onDidChange(callback);
 
@@ -192,6 +203,11 @@ describe("activation", () => {
     expect(callback.calls.count()).toBe(1);
 
     lumine.config.set("more-icons.set", "seti");
+    await conditionPromise(() =>
+      service
+        .iconFor({ path: "/p/main.js", hints: {} })
+        ?.classes.some((name) => name.startsWith("mi-s-")),
+    );
     expect(callback.calls.count()).toBe(2);
 
     subscription.dispose();
@@ -199,12 +215,21 @@ describe("activation", () => {
     expect(callback.calls.count()).toBe(2);
   });
 
-  it("warns and keeps working when a custom theme folder is unusable", () => {
+  it("warns and keeps working when a custom theme folder is unusable", async () => {
     spyOn(lumine.notifications, "addError");
 
     lumine.config.set("more-icons.set", "seti");
+    await conditionPromise(() =>
+      service
+        .iconFor({ path: "/p/main.js", hints: {} })
+        ?.classes.some((name) => name.startsWith("mi-s-")),
+    );
     lumine.config.set("more-icons.customThemePath", path.join(__dirname, "fixtures"));
 
+    await conditionPromise(() => lumine.notifications.addError.calls.count() > 0);
+    await conditionPromise(() =>
+      service.iconFor({ path: "/p/main.js", hints: {} })?.classes.includes("mi-g-js-icon"),
+    );
     expect(lumine.notifications.addError).toHaveBeenCalled();
     // Falls back to the set that needs no external files.
     expect(classesFor("/p/main.js")).toContain("mi-g-js-icon");

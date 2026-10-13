@@ -14,7 +14,7 @@ describe("icon mapping source contracts", () => {
     lumine.config.set("more-icons.coloured", true);
     const pack = await lumine.packages.activatePackage("more-icons");
     service = pack.mainModule.provideIcons();
-    await Promise.resolve();
+    await conditionPromise(() => service.iconFor({ path: "/p/main.js", hints: {} }) !== null);
     container = document.createElement("div");
     container.style.color = "rgb(17, 23, 29)";
     document.body.appendChild(container);
@@ -41,8 +41,13 @@ describe("icon mapping source contracts", () => {
     expect(service.iconFor({ path: "ordinary.js", hints: {} }).classes).toContain("mi-g-js-icon");
   });
 
-  it("uses text colour for Seti glyphs when colouring is disabled and restores it", () => {
+  it("uses text colour for Seti glyphs when colouring is disabled and restores it", async () => {
     lumine.config.set("more-icons.set", "seti");
+    await conditionPromise(() =>
+      service
+        .iconFor({ path: "/p/main.js", hints: {} })
+        ?.classes.some((name) => name.startsWith("mi-s-")),
+    );
     const target = { path: "owned-icons/example.apex", hints: {} };
     const element = document.createElement("span");
     const update = () => {

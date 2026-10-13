@@ -12,6 +12,7 @@ describe("Seti grammar-dependent icon ownership", () => {
     await lumine.packages.activatePackage(path.join(__dirname, ".."));
     main = lumine.packages.getActivePackage("more-icons").mainModule;
     service = main.provideIcons();
+    await conditionPromise(() => service.iconFor({ path: "/p/main.js", hints: {} }) !== null);
     subscriptions = [];
   });
 
