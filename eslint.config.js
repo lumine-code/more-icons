@@ -12,7 +12,7 @@ module.exports = [
     // Vendored upstream data: `sets/file-icons/icondb.js` is a generated
     // match table, and the fonts and manifests beside it are binary or
     // third-party.
-    ignores: ["sets/**"],
+    ignores: ["sets/**", "demo/**"],
   },
   js.configs.recommended,
   n.configs["flat/recommended-script"],
