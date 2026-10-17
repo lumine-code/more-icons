@@ -25,7 +25,8 @@
     "assets",
     "lib",
     "sets",
-    "spec"
+    "spec",
+    "THIRD_PARTY_NOTICES"
   ],
   "scripts": {
     "build:file-icons": "node tools/import-file-icons.js",
