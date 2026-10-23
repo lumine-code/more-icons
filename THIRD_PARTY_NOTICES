@@ -136,12 +136,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----- BEGIN THIRD-PARTY LICENSE: upstream:file-icons_atom -----
 Source: https://github.com/file-icons/atom
-Revision: fe40e7182c45f2a7891b4f18bc4bd15d69f13082
+Revision: fa78a1b05fa4b5741d5141f33abdc272aba954bf
 
 Original file: LICENSE.md
 
 Copyright (c) 2014-2016 Daniel Brooker
-Copyright (c) 2016-2025 John Gardner
+Copyright (c) 2016-2026 John Gardner
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -238,7 +238,7 @@ and `palette.json` are generated from that project's `styles/icons.less` and
 not redistributed here.
 
     https://github.com/file-icons/atom
-    Match database revision: fe40e7182c45f2a7891b4f18bc4bd15d69f13082
+    Match database revision: fa78a1b05fa4b5741d5141f33abdc272aba954bf
     Copyright (c) 2014-2016 Daniel Brooker
     Copyright (c) 2016-2025 John Gardner
     MIT License

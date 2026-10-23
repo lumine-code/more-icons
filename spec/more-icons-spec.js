@@ -47,7 +47,7 @@ describe("file-icons", () => {
         iconTable.files.byPath.length,
         iconTable.files.byScope.length,
         iconTable.files.bySignature.length,
-      ]).toEqual([2082, 232, 552, 45, 599, 146]);
+      ]).toEqual([2087, 232, 553, 45, 600, 147]);
       for (const icon of iconTable.files.byName) {
         expect(icon.match instanceof RegExp).toBe(true);
       }
@@ -120,6 +120,33 @@ describe("file-icons", () => {
       expect(fileIcons.resolve("/usr/share/groff/current/tmac/papers/Index")).toContain(
         "mi-g-book-icon",
       );
+    });
+
+    it("recognises Emacs data and build files without replacing nearby file types", () => {
+      const cases = [
+        ["data.eld", "dark-cyan"],
+        ["tramp", "medium-green"],
+        ["dynvars", "medium-cyan"],
+        [".dynvars", "medium-cyan"],
+        ["project.dynvars", "medium-cyan"],
+        ["Keg", "dark-orange"],
+        ["Eldev", "medium-orange"],
+      ];
+      for (const [name, colour] of cases) {
+        expect(fileIcons.resolve(path.join("owned-icons", name))).toContain("mi-g-emacs-icon");
+        expect(fileIcons.resolve(path.join("owned-icons", name))).toContain(`mi-c-${colour}`);
+      }
+      expect(fileIcons.resolve("owned-icons/dynvars.json")).toContain("mi-g-json-icon");
+      expect(fileIcons.resolve("owned-icons/Keg.js")).toContain("mi-g-js-icon");
+      expect(fileIcons.resolve("owned-icons/trampoline")).toBeNull();
+    });
+
+    it("retains the Info-directory signature in the decoded source index", () => {
+      const entry = iconTable.files.bySignature.find((icon) =>
+        icon.signature.test("This is the file /usr/share/info/dir, an index of available manuals."),
+      );
+      expect(entry?.icon).toBe("icon-file-text");
+      expect(entry.scope.test("text.info")).toBe(true);
     });
 
     it("recognises the Lefthook support directory", () => {
